@@ -69,8 +69,8 @@ Exact parsing / effect-interpretation edge cases beyond the above are implementa
 - **Pool:** TCG (English) only.
 - **Accuracy bar:** Complete and accurate matching from card data/text.
 - **Banlist:** Not applied to filtering or ranking in v1.
-- **Data source:** Not decided by the user for v1 — see Open questions.
-- **Updates:** How often card data is refreshed is not decided — see Open questions.
+- **Data source:** **YGOPRODeck API v7** (local TCG cache) — see [card-data-source.md](./card-data-source.md).
+- **Updates:** How often card data is refreshed is not decided — see Open questions (ingest/refresh mechanism is documented in the data-source decision).
 
 ---
 
@@ -97,7 +97,7 @@ Items below were **not decided** by the user. Treat as open questions; recommend
 
 | Topic | Status | Recommendation (if any) |
 | --- | --- | --- |
-| Exact card database / API (e.g. YGOPRODeck) | Undecided | Prefer a well-maintained TCG English dataset with full effect text; evaluate YGOPRODeck or equivalent for coverage and license. |
+| Exact card database / API (e.g. YGOPRODeck) | **Decided** — [card-data-source.md](./card-data-source.md) | **YGOPRODeck API v7** as primary: bulk `format=tcg` ingest + local cache for offline matching; re-host images; store but ignore banlist in v1 UI. YAML Yugi is the fallback dump. |
 | Tech stack | Undecided | Choose based on team familiarity; keep matching logic separable from UI so accuracy tests can run headlessly. |
 | Multi-clause effect grouping in UI | Undecided | Flat deduped list + optional location labels (see UI recommendation above). |
 | Auth / accounts | Not discussed | Out of scope for v1; omit unless a later need appears. |
