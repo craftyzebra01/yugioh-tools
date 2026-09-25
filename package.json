@@ -9,6 +9,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "start": "tsx scripts/serve.ts",
+    "serve": "tsx scripts/serve.ts",
     "ingest": "tsx scripts/ingest.ts",
     "refresh": "tsx scripts/refresh.ts",
     "test": "tsx --test tests/**/*.test.ts",
