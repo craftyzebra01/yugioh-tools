@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+dist/
+
+# Generated card cache & re-hosted images (run `npm run ingest`)
+data/cache/*
+data/images/*
+!data/cache/.gitkeep
+!data/images/.gitkeep
+
+# OS / editor
+.DS_Store
+*.log
+.env
+.env.*
