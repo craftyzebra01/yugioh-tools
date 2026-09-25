@@ -1,0 +1,242 @@
+:root {
+  --bg0: #0f1419;
+  --bg1: #1a222c;
+  --bg2: #243040;
+  --ink: #e8eef4;
+  --muted: #9aabbc;
+  --accent: #3d9cf0;
+  --accent-dim: #2a6fa8;
+  --line: #334455;
+  --warn: #e0b35a;
+  --font-display: "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-body: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #1e3a5f 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #1a3344 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0), #121820 40%, var(--bg0));
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.header {
+  margin-bottom: 1.75rem;
+}
+
+.brand {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  font-weight: 700;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+  font-size: 0.98rem;
+}
+
+.meta {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.search-panel label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+}
+
+#q {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg1);
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+#q:focus {
+  outline: 2px solid var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.results {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg1);
+  max-height: 280px;
+  overflow: auto;
+}
+
+.results li button {
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+}
+
+.results li:last-child button {
+  border-bottom: 0;
+}
+
+.results li button:hover,
+.results li button:focus {
+  background: var(--bg2);
+  outline: none;
+}
+
+.results .sub {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+.detail {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.detail-head h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.35rem;
+}
+
+.selected-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.desc-box {
+  margin: 1rem 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg1);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.desc-box summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.desc-box pre {
+  white-space: pre-wrap;
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin: 0.5rem 0 0;
+}
+
+.match-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.match-head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.match-summary {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.uncertain {
+  color: var(--warn);
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+}
+
+.matches {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: match;
+}
+
+.matches li {
+  counter-increment: match;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.matches li::before {
+  content: counter(match);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.match-name {
+  font-weight: 600;
+}
+
+.match-loc {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.footer {
+  margin-top: 3rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 0.95rem;
+}

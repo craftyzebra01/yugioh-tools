@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Card Pull Matcher — Yugioh Tools</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <p class="brand">Yugioh Tools</p>
+        <h1>Card Pull Matcher</h1>
+        <p class="tagline">
+          Search a TCG card by name, then see every card it can potentially pull
+          (Deck, GY, banished, and more). Matching is automatic from effect text.
+        </p>
+        <p id="meta" class="meta" aria-live="polite">Loading cache…</p>
+      </header>
+
+      <section class="search-panel" aria-label="Card name search">
+        <label for="q">Card name</label>
+        <input
+          id="q"
+          type="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="e.g. Reinforcement of the Army"
+        />
+        <ul id="results" class="results" hidden></ul>
+      </section>
+
+      <section id="detail" class="detail" hidden>
+        <div class="detail-head">
+          <h2 id="selected-name"></h2>
+          <p id="selected-meta" class="selected-meta"></p>
+        </div>
+        <details class="desc-box">
+          <summary>Effect text</summary>
+          <pre id="selected-desc"></pre>
+        </details>
+        <div class="match-head">
+          <h3>Cards this card can pull</h3>
+          <p id="match-summary" class="match-summary"></p>
+        </div>
+        <p id="uncertain-note" class="uncertain" hidden></p>
+        <ol id="matches" class="matches"></ol>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Card data: YGOPRODeck · Card names, text, and artwork © Konami / rights
+          holders · Banlist ignored in v1 · No drill-down in v1
+        </p>
+      </footer>
+    </div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

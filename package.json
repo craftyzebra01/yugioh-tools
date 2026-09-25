@@ -9,15 +9,19 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "start": "tsx scripts/serve.ts",
+    "serve": "tsx scripts/serve.ts",
     "ingest": "tsx scripts/ingest.ts",
     "refresh": "tsx scripts/refresh.ts",
     "test": "tsx --test tests/**/*.test.ts",
     "smoke": "tsx scripts/smoke.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
+  "dependencies": {
+    "tsx": "^4.19.3"
+  },
   "devDependencies": {
     "@types/node": "^22.13.10",
-    "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }
 }
