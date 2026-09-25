@@ -27,6 +27,7 @@ Web app: **name search → select a card → flat list of every card it can pote
 - No drill-down, reverse lookup, deckbuilding, or auth in v1.
 
 Product spec: [`specs/card-pull-matcher-v1.md`](./specs/card-pull-matcher-v1.md).  
+Call flow (search → matches): [`docs/search-to-match-flow.md`](./docs/search-to-match-flow.md).  
 Coverage / known gaps: [`docs/matching-coverage.md`](./docs/matching-coverage.md).
 
 ### Run the app
