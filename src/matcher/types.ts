@@ -59,6 +59,13 @@ export interface PullCriteria {
   kinds?: PullKind[];
   /** Names that must not match (e.g. except "Predaplant Ophrys Scorpio"). */
   excludeNames?: string[];
+  /**
+   * Card names that candidate cards must mention in their effect text
+   * (PSCT: `monster that mentions "X"`). Not the same as exactNames.
+   */
+  mentionsNames?: string[];
+  /** Monster races that must not match (e.g. `non-Warrior "Archetype" monster`). */
+  excludeRaces?: string[];
   /** True when the clause is a pull but criteria could not be fully parsed. */
   uncertain?: boolean;
   /** Raw target phrase between count and "from …". */

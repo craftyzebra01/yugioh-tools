@@ -64,6 +64,7 @@ export function clauseIsMatchable(clause: PullClause): boolean {
   return (
     (c.exactNames?.length ?? 0) > 0 ||
     (c.archetypes?.length ?? 0) > 0 ||
+    (c.mentionsNames?.length ?? 0) > 0 ||
     (c.races?.length ?? 0) > 0 ||
     (c.attributes?.length ?? 0) > 0 ||
     (c.kinds?.length ?? 0) > 0 ||

@@ -87,4 +87,44 @@ describe("matcher integration (local cache)", async () => {
     const sorted = [...names].sort((a, b) => a.localeCompare(b));
     assert.deepEqual(names, sorted);
   });
+
+  it("Mind Shuffle returns monsters that mention Light and Darkness Ritual", () => {
+    const card = cards.find((c) => c.name === "Mind Shuffle");
+    assert.ok(card, "Mind Shuffle missing from cache — re-ingest?");
+    const result = findPullMatches(card!, cards);
+    assert.ok(
+      result.matches.length >= 3,
+      `expected non-empty mentions list, got ${result.matches.length}`,
+    );
+    for (const m of result.matches) {
+      assert.ok(/monster/i.test(m.card.type), m.card.name);
+      assert.ok(
+        /["“”']Light and Darkness Ritual["“”']/i.test(m.card.desc),
+        `${m.card.name} should mention Light and Darkness Ritual`,
+      );
+    }
+    assert.ok(
+      !result.matches.some((m) => m.card.name === "Light and Darkness Ritual"),
+    );
+  });
+
+  it("Vanquish Soul Razen returns non-Warrior Vanquish Soul monsters", () => {
+    const card = cards.find((c) => c.name === "Vanquish Soul Razen");
+    assert.ok(card, "Vanquish Soul Razen missing from cache — re-ingest?");
+    const result = findPullMatches(card!, cards);
+    assert.ok(
+      result.matches.length >= 5,
+      `expected non-empty VS list, got ${result.matches.length}`,
+    );
+    for (const m of result.matches) {
+      const isVs =
+        m.card.archetype === "Vanquish Soul" ||
+        /vanquish soul/i.test(m.card.name) ||
+        /vanquisher/i.test(m.card.name);
+      assert.ok(isVs, m.card.name);
+      assert.ok(/monster/i.test(m.card.type), m.card.name);
+      assert.notEqual(m.card.race, "Warrior", m.card.name);
+    }
+    assert.ok(!result.matches.some((m) => m.card.name === "Vanquish Soul Razen"));
+  });
 });

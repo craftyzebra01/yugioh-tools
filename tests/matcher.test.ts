@@ -35,6 +35,24 @@ describe("parseTargetCriteria", () => {
     const c = parseTargetCriteria("monster with 1500 or less ATK");
     assert.deepEqual(c.atk, [{ op: "lte", value: 1500 }]);
   });
+
+  it('parses mentions "Name" without treating the name as exact or Attribute', () => {
+    const c = parseTargetCriteria(
+      'monster that mentions "Light and Darkness Ritual"',
+    );
+    assert.deepEqual(c.mentionsNames, ["Light and Darkness Ritual"]);
+    assert.equal(c.exactNames, undefined);
+    assert.equal(c.attributes, undefined);
+    assert.ok(c.kinds?.includes("monster"));
+  });
+
+  it('parses non-Race "Archetype" monster as excludeRaces', () => {
+    const c = parseTargetCriteria('non-Warrior "Vanquish Soul" monster');
+    assert.deepEqual(c.archetypes, ["Vanquish Soul"]);
+    assert.deepEqual(c.excludeRaces, ["Warrior"]);
+    assert.equal(c.races, undefined);
+    assert.ok(c.kinds?.includes("monster"));
+  });
 });
 
 describe("searcher fixtures — parsePullClauses", () => {
@@ -124,6 +142,34 @@ describe("searcher fixtures — parsePullClauses", () => {
               crit.excludeNames!.every((n) => c.excludeNames?.includes(n)),
             ),
             `${fixture.name}: excludeNames`,
+          );
+        }
+        if (crit.excludeRaces) {
+          assert.ok(
+            joined.some((c) =>
+              crit.excludeRaces!.every((r) => c.excludeRaces?.includes(r)),
+            ),
+            `${fixture.name}: excludeRaces`,
+          );
+          assert.ok(
+            !joined.some((c) =>
+              crit.excludeRaces!.some((r) => c.races?.includes(r)),
+            ),
+            `${fixture.name}: excludeRaces must not also appear as required races`,
+          );
+        }
+        if (crit.mentionsNames) {
+          assert.ok(
+            joined.some((c) =>
+              crit.mentionsNames!.every((n) => c.mentionsNames?.includes(n)),
+            ),
+            `${fixture.name}: mentionsNames`,
+          );
+          assert.ok(
+            !joined.some((c) =>
+              crit.mentionsNames!.some((n) => c.exactNames?.includes(n)),
+            ),
+            `${fixture.name}: mentionsNames must not be exactNames`,
           );
         }
       }
@@ -231,5 +277,35 @@ describe("cardMatchesCriteria + findPullMatches (mini pool)", () => {
       }),
       true,
     );
+  });
+
+  it("Mind Shuffle matches monsters that mention the Ritual", () => {
+    const card = {
+      id: 24749710,
+      name: "Mind Shuffle",
+      desc: SEARCHER_FIXTURES.find((f) => f.name === "Mind Shuffle")!.desc,
+      type: "Trap Card",
+      images: [],
+    } satisfies Card;
+    const result = findPullMatches(card, pool);
+    const names = result.matches.map((m) => m.card.name);
+    assert.ok(names.includes("Test Mentions Ritual"));
+    assert.ok(!names.includes("Test No Mention Monster"));
+    assert.ok(!names.includes("Light and Darkness Ritual"));
+  });
+
+  it("Vanquish Soul Razen excludes Warriors of the archetype", () => {
+    const card = {
+      id: 29302858,
+      name: "Vanquish Soul Razen",
+      desc: SEARCHER_FIXTURES.find((f) => f.name === "Vanquish Soul Razen")!
+        .desc,
+      type: "Effect Monster",
+      images: [],
+    } satisfies Card;
+    const result = findPullMatches(card, pool);
+    const names = result.matches.map((m) => m.card.name);
+    assert.ok(names.includes("Vanquish Soul Test Dragon"));
+    assert.ok(!names.includes("Vanquish Soul Test Warrior"));
   });
 });

@@ -220,13 +220,46 @@ function extractQuoted(text: string): string[] {
   return names;
 }
 
+/** Strip quoted card/archetype names so attribute/race scanners ignore them. */
+function stripQuotedSpans(text: string): string {
+  return text.replace(/["“”'][^"“”']+["“”']/g, " ");
+}
+
+/**
+ * PSCT: `monster that mentions "X"` / `Spell/Trap that mentions "X"`.
+ * The quoted name is a reference target, not an exact-name pull.
+ */
+function extractMentionsNames(text: string): string[] {
+  const out: string[] = [];
+  const re = /\bmentions?\s+["“”']([^"“”']+)["“”']/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const n = m[1]!.trim();
+    if (n && !out.some((x) => x.toLowerCase() === n.toLowerCase())) out.push(n);
+  }
+  return out;
+}
+
+function parseExcludeRaces(text: string): string[] {
+  const out: string[] = [];
+  const re = new RegExp(String.raw`\bnon-(${RACE_ALT})\b`, "gi");
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const found = MONSTER_RACES.find((r) => r.toLowerCase() === m![1]!.toLowerCase());
+    const race = found ?? m[1]!;
+    if (!out.some((x) => x.toLowerCase() === race.toLowerCase())) out.push(race);
+  }
+  return out;
+}
+
 function parseKindsAndRace(text: string): {
   kinds: PullKind[];
   races: string[];
 } {
   const kinds: PullKind[] = [];
   const races: string[] = [];
-  const t = text;
+  // Ignore attribute/race tokens that only appear inside quotes (e.g. "Light and Darkness Ritual").
+  const t = stripQuotedSpans(text);
 
   const kindRules: Array<{ re: RegExp; kind: PullKind }> = [
     { re: /\britual\s+monster\b/i, kind: "ritual_monster" },
@@ -278,8 +311,9 @@ function parseKindsAndRace(text: string): {
     }
   }
 
+  // `non-Warrior` is an exclusion — do not treat Warrior as a required race.
   const raceRe = new RegExp(
-    String.raw`\b(${RACE_ALT})(?:-Type)?\b`,
+    String.raw`(?<!non-)\b(${RACE_ALT})(?:-Type)?\b`,
     "i",
   );
   const rm = raceRe.exec(t);
@@ -294,9 +328,11 @@ function parseKindsAndRace(text: string): {
 
 function parseAttributes(text: string): string[] {
   const attrs: string[] = [];
+  // Strip quotes so "Light and Darkness Ritual" does not imply LIGHT Attribute.
+  const scanned = stripQuotedSpans(text);
   const re = new RegExp(String.raw`\b(${ATTR_ALT})\b`, "gi");
   let m: RegExpExecArray | null;
-  while ((m = re.exec(text)) !== null) {
+  while ((m = re.exec(scanned)) !== null) {
     const a = m[1]!.toUpperCase();
     if (!attrs.includes(a)) attrs.push(a);
   }
@@ -333,21 +369,26 @@ function looksUncertain(target: string): boolean {
 }
 
 /**
- * Classify quoted strings: archetype vs exact card name.
+ * Classify quoted strings: mentions-reference vs archetype vs exact card name.
  * Heuristic: if followed by monster/card/spell/trap → archetype; else exact name.
- * Also: short series tokens often archetypes when kind is monster.
+ * Quotes that are the object of `mentions` are not exact-name pulls.
  */
 function classifyQuotes(
   target: string,
   quoted: string[],
+  mentionsNames: string[],
 ): { exactNames: string[]; archetypes: string[] } {
   const exactNames: string[] = [];
   const archetypes: string[] = [];
+  const mentionSet = new Set(mentionsNames.map((n) => n.toLowerCase()));
 
   for (const q of quoted) {
+    if (mentionSet.has(q.toLowerCase())) {
+      continue;
+    }
     // Pattern: "Name" monster/card/Spell/Trap
     const archetypeFollow = new RegExp(
-      String.raw`["“”']${escapeRegExp(q)}["“”']\s+(?:monster|card|spell|trap)`,
+      String.raw`["“”']${escapeRegExp(q)}["“”']\s+(?:monster|card|spell|trap|xyz|synchro|fusion|link|pendulum)`,
       "i",
     );
     if (archetypeFollow.test(target)) {
@@ -383,8 +424,14 @@ export function parseTargetCriteria(targetText: string): PullCriteria {
   const except = parseExcept(raw);
   if (except.length) criteria.excludeNames = except;
 
+  const mentionsNames = extractMentionsNames(raw);
+  if (mentionsNames.length) criteria.mentionsNames = mentionsNames;
+
+  const excludeRaces = parseExcludeRaces(raw);
+  if (excludeRaces.length) criteria.excludeRaces = excludeRaces;
+
   const quoted = extractQuoted(raw);
-  const { exactNames, archetypes } = classifyQuotes(raw, quoted);
+  const { exactNames, archetypes } = classifyQuotes(raw, quoted, mentionsNames);
   if (exactNames.length) criteria.exactNames = exactNames;
   if (archetypes.length) criteria.archetypes = archetypes;
 
@@ -414,6 +461,7 @@ export function parseTargetCriteria(targetText: string): PullCriteria {
   const hasConstraint =
     (criteria.exactNames?.length ?? 0) > 0 ||
     (criteria.archetypes?.length ?? 0) > 0 ||
+    (criteria.mentionsNames?.length ?? 0) > 0 ||
     (criteria.races?.length ?? 0) > 0 ||
     (criteria.attributes?.length ?? 0) > 0 ||
     (criteria.kinds?.length ?? 0) > 0 ||
