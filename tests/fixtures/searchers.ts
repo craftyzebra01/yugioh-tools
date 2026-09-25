@@ -32,6 +32,8 @@ export interface SearcherFixture {
       levelEq?: number;
       atkLte?: number;
       excludeNames?: string[];
+      excludeRaces?: string[];
+      mentionsNames?: string[];
     };
   };
 }
@@ -214,6 +216,39 @@ export const SEARCHER_FIXTURES: SearcherFixture[] = [
       criteria: { kindsIncludes: ["monster"], levelEq: 1 },
     },
   },
+  {
+    id: 24749710,
+    name: "Mind Shuffle",
+    type: "Trap Card",
+    race: "Continuous",
+    desc: 'During either player\'s turn: You can add 1 monster that mentions "Light and Darkness Ritual" from your Deck to your hand, then discard 1 card. You can only use this effect of "Mind Shuffle" once per turn. When your opponent activates a card or effect: You can return 1 Level 7 or higher monster you control to the hand; Special Summon 1 monster that mentions "Light and Darkness Ritual" from your hand, with a different name than the returned monster, ignoring its Summoning conditions. You cannot activate these effects of "Mind Shuffle" in the same Chain.',
+    expect: {
+      minClauses: 2,
+      locations: ["deck", "hand"],
+      actions: ["add_to_hand", "special_summon"],
+      criteria: {
+        kindsIncludes: ["monster"],
+        mentionsNames: ["Light and Darkness Ritual"],
+      },
+    },
+  },
+  {
+    id: 29302858,
+    name: "Vanquish Soul Razen",
+    type: "Effect Monster",
+    race: "Warrior",
+    desc: 'If this card is Normal or Special Summoned: You can add 1 non-Warrior "Vanquish Soul" monster from your Deck to your hand. (Quick Effect): You can activate 1 of these effects, by revealing monster(s) in your hand with the listed Attribute(s);\n● FIRE: This card cannot be destroyed by card effects this turn.\n● FIRE & DARK: Destroy all other monsters in this card\'s column.\nYou can only use each effect of "Vanquish Soul Razen" once per turn, and cannot activate more than 1 in the same Chain.',
+    expect: {
+      minClauses: 1,
+      locations: ["deck"],
+      actions: ["add_to_hand"],
+      criteria: {
+        archetypes: ["Vanquish Soul"],
+        kindsIncludes: ["monster"],
+        excludeRaces: ["Warrior"],
+      },
+    },
+  },
 ];
 
 /** Tiny synthetic pool for criteria matching without the full cache. */
@@ -310,6 +345,56 @@ export const MINI_POOL = [
     level: 8,
     atk: 4000,
     def: 0,
+    images: [],
+  },
+  {
+    id: 9,
+    name: "Test Mentions Ritual",
+    desc: 'You can Ritual Summon this card with "Light and Darkness Ritual". Once per turn: You can discard 1 card.',
+    type: "Effect Monster",
+    race: "Spellcaster",
+    attribute: "DARK",
+    level: 8,
+    atk: 2800,
+    def: 2400,
+    images: [],
+  },
+  {
+    id: 10,
+    name: "Test No Mention Monster",
+    desc: "A vanilla-looking effect monster with no special references.",
+    type: "Effect Monster",
+    race: "Warrior",
+    attribute: "EARTH",
+    level: 4,
+    atk: 1500,
+    def: 1200,
+    images: [],
+  },
+  {
+    id: 11,
+    name: "Vanquish Soul Test Dragon",
+    desc: "",
+    type: "Effect Monster",
+    race: "Dragon",
+    attribute: "FIRE",
+    level: 8,
+    archetype: "Vanquish Soul",
+    atk: 3000,
+    def: 1500,
+    images: [],
+  },
+  {
+    id: 12,
+    name: "Vanquish Soul Test Warrior",
+    desc: "",
+    type: "Effect Monster",
+    race: "Warrior",
+    attribute: "FIRE",
+    level: 4,
+    archetype: "Vanquish Soul",
+    atk: 1800,
+    def: 1500,
     images: [],
   },
 ] as const;

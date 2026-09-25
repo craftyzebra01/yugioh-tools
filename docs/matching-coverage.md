@@ -17,6 +17,8 @@ Common PSCT shapes used by classic searchers / mills / revivals:
 | Hand **or** Deck | Emergency Teleport, One for One |
 | Ritual Monster / Ritual Spell / Field Spell kinds | Preparation of Rites, Terraforming |
 | Level / ATK / Attribute / Type (race) filters | ROTA, Sangan, Armageddon Knight |
+| `mentions "Card Name"` | Mind Shuffle, Clear Cube, Cornfield Coatl |
+| `non-<Type> "Archetype" monster` | Vanquish Soul Razen, Gogogo Goblindbergh, K9-04 Noroi |
 
 Costs that only **send from hand** (discard) are **not** treated as pulls.
 
@@ -32,12 +34,13 @@ These are intentional honesty markers — not silent failures when we can detect
 6. **Archetype tagging** — uses YGOPRODeck `archetype` plus light name heuristics; incomplete tags can omit or over-include edge members.
 7. **Non-English / OCG-only** — out of pool by design.
 8. **Banlist** — stored on cards but **never** hides matches in v1.
+9. **Location span greed** — long clauses with later “from the Extra Deck” restrictions (e.g. summon locks) can still attach `extra_deck` as a source location; targets remain filtered by other criteria.
 
 When a clause is uncertain and has no usable structured filters, it is **omitted** from the flat match list (rather than dumping ~14k cards). The API reports `uncertainClauseCount` for UI notes.
 
 ## Tests
 
-- `tests/matcher.test.ts` — offline fixtures for representative searchers + mini pool.
+- `tests/matcher.test.ts` — offline fixtures for representative searchers + mini pool (includes Mind Shuffle / Vanquish Soul Razen).
 - `tests/matcher-integration.test.ts` — live checks against `data/cache` when ingested.
 
 Run: `npm test`.

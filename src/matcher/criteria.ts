@@ -123,6 +123,21 @@ function archetypeMatches(card: Card, archetype: string): boolean {
   return false;
 }
 
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * True when `card`'s effect text mentions the named card (PSCT quotes).
+ * OPT self-name quotes alone do not count when looking for a different name.
+ */
+function cardMentionsName(card: Card, name: string): boolean {
+  const needle = name.trim();
+  if (!needle) return false;
+  const re = new RegExp(`["“”']${escapeRegExp(needle)}["“”']`, "i");
+  return re.test(card.desc ?? "");
+}
+
 /**
  * Returns true if `card` satisfies every constraint present on `criteria`.
  * Uncertain empty criteria (no fields) match nothing — callers should not
@@ -136,12 +151,26 @@ export function cardMatchesCriteria(card: Card, criteria: PullCriteria): boolean
     }
   }
 
+  if (criteria.excludeRaces?.length) {
+    const race = (card.race ?? "").toLowerCase();
+    if (criteria.excludeRaces.some((r) => race === r.toLowerCase())) {
+      return false;
+    }
+  }
+
   if (criteria.exactNames?.length) {
     const lower = card.name.toLowerCase();
     if (!criteria.exactNames.some((n) => n.toLowerCase() === lower)) {
       return false;
     }
     // Exact name is sufficient when present (other fields still apply if set).
+  }
+
+  if (criteria.mentionsNames?.length) {
+    // AND semantics across listed names (rare); each must appear quoted in desc.
+    if (!criteria.mentionsNames.every((n) => cardMentionsName(card, n))) {
+      return false;
+    }
   }
 
   if (criteria.archetypes?.length) {
@@ -202,6 +231,7 @@ export function cardMatchesCriteria(card: Card, criteria: PullCriteria): boolean
   const hasConstraint =
     (criteria.exactNames?.length ?? 0) > 0 ||
     (criteria.archetypes?.length ?? 0) > 0 ||
+    (criteria.mentionsNames?.length ?? 0) > 0 ||
     (criteria.races?.length ?? 0) > 0 ||
     (criteria.attributes?.length ?? 0) > 0 ||
     (criteria.kinds?.length ?? 0) > 0 ||
