@@ -84,11 +84,14 @@ npm run ingest -- --images --image-sizes small
 | `data/cache/by-id.json` | id → index map |
 | `data/images/{full,small,cropped}/` | Re-hosted art (optional) |
 
+Banlist (`banlist_info`) is **stored** but must **not** filter v1 UI/matching.
+
 ### Compliance
 
 - Stay under YGOPRODeck’s **20 req/s** limit (ingest spaces requests).
 - **Do not hotlink** images — use `--images` and serve locally.
 - Card names, text, and artwork © Konami / rights holders. Credit: “Card data: YGOPRODeck”.
+- See [`docs/card-data.md`](./docs/card-data.md) for refresh cadence notes and attribution.
 
 ---
 
