@@ -191,8 +191,18 @@ export async function createMatcherApp(options: WebAppOptions = {}) {
     async listen(): Promise<{ port: number; host: string }> {
       const port = options.port ?? Number(process.env.PORT ?? 8787);
       const host = options.host ?? "0.0.0.0";
-      await new Promise<void>((resolve) => {
-        server.listen(port, host, () => resolve());
+      await new Promise<void>((resolve, reject) => {
+        const onError = (err: Error) => {
+          server.off("listening", onListening);
+          reject(err);
+        };
+        const onListening = () => {
+          server.off("error", onError);
+          resolve();
+        };
+        server.once("error", onError);
+        server.once("listening", onListening);
+        server.listen(port, host);
       });
       return { port, host };
     },

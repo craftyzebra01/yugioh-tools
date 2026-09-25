@@ -4,14 +4,15 @@ Tooling for Yu-Gi-Oh! applications, starting with **Card Pull Matcher** (see `sp
 
 ## Quick start
 
+Requires Node.js 20+. From the repo root:
+
 ```bash
 npm install
-npm run ingest    # once: download TCG cache into data/cache/
-npm test          # matcher + ingest unit tests
-npm start         # web UI at http://localhost:8787
+npm run ingest    # required once: downloads TCG cache → data/cache/
+npm start         # web UI — http://localhost:8787
 ```
 
-Requires Node.js 20+.
+`npm start` runs `tsx scripts/serve.ts` (script name: **`start`**). It will exit with a clear message if you skip `npm install` or `npm run ingest`. Optional: `npm test` for unit/integration tests. Override the port with `PORT=8788 npm start`.
 
 ---
 
@@ -31,8 +32,10 @@ Coverage / known gaps: [`docs/matching-coverage.md`](./docs/matching-coverage.md
 ### Run the app
 
 ```bash
-npm run ingest    # if data/cache/ is empty
-npm start         # PORT=8787 by default
+npm install           # installs tsx (needed by npm start)
+npm run ingest        # if data/cache/cards.json is missing
+npm start             # listens on 0.0.0.0:8787 (or $PORT)
+# alias: npm run serve
 ```
 
 Open `http://localhost:8787`. Search by name, click a result, read the flat match list.
